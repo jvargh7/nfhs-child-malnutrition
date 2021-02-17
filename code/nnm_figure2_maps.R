@@ -73,6 +73,13 @@ tmap_plot <- function(id,tmap_title){
   shape_df2 <- sp::merge(shape_df,district_data[,c("sdistri_nfhs5to4","status")],
                          by.x="REGCODE",by.y="sdistri_nfhs5to4",all.x=TRUE)
   
+  shape_df2@data <- shape_df2@data %>% 
+    mutate(status2 = as.numeric(status)) %>% 
+    mutate(status2 = case_when(REGCODE == 28 & OTHREGNA == "Uttar Pradesh" ~ NA_real_,
+                               TRUE ~ status2)) %>% 
+    mutate(status = factor(status2,levels=c(1:3),labels=c("Increased","Decreased 0-7 pp","Decreased > 7pp"))) %>% 
+    dplyr::select(-status2)
+  
   # https://gis.stackexchange.com/questions/310485/how-to-i-limit-the-x-and-y-axes-with-tmap-in-r
   a <- tm_shape(shape_df2,ext=1.2) + 
     tm_borders() + tm_fill(title= "",
