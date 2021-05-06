@@ -63,7 +63,8 @@ nfhs_all_national <- bind_rows(nfhs_se[[1]] %>%
   mutate_at(vars(contains("5v4")),function(x) x/4) %>% 
   mutate(change_4v3 = paste0(round_d(diff_mean_4v3,1)," (",round_d(diff_lci_4v3,1),", ",round_d(diff_uci_4v3,1),")"),
          change_5v4 = paste0(round_d(diff_mean_5v4,1)," (",round_d(diff_lci_5v4,1),", ",round_d(diff_uci_5v4,1),")")
-         )
+         )  %>% 
+  mutate(z_diff_change = (diff_mean_4v3 - diff_mean_5v4)/(sqrt(diff_se_4v3^2 + diff_se_5v4^2)))
 
 # RURAL ------
 
@@ -96,7 +97,8 @@ nfhs_all_rural <- bind_rows(nfhs_se[[6]] %>%
   mutate_at(vars(contains("5v4")),function(x) x/4) %>% 
   mutate(change_4v3 = paste0(round_d(diff_mean_4v3,1)," (",round_d(diff_lci_4v3,1),", ",round_d(diff_uci_4v3,1),")"),
          change_5v4 = paste0(round_d(diff_mean_5v4,1)," (",round_d(diff_lci_5v4,1),", ",round_d(diff_uci_5v4,1),")")
-  )
+  )  %>% 
+  mutate(z_diff_change = (diff_mean_4v3 - diff_mean_5v4)/(sqrt(diff_se_4v3^2 + diff_se_5v4^2)))
 
 # URBAN ------
 
@@ -129,7 +131,8 @@ nfhs_all_urban <- bind_rows(nfhs_se[[6]] %>%
   mutate_at(vars(contains("5v4")),function(x) x/4) %>% 
   mutate(change_4v3 = paste0(round_d(diff_mean_4v3,1)," (",round_d(diff_lci_4v3,1),", ",round_d(diff_uci_4v3,1),")"),
          change_5v4 = paste0(round_d(diff_mean_5v4,1)," (",round_d(diff_lci_5v4,1),", ",round_d(diff_uci_5v4,1),")")
-  )
+  )  %>% 
+  mutate(z_diff_change = (diff_mean_4v3 - diff_mean_5v4)/(sqrt(diff_se_4v3^2 + diff_se_5v4^2)))
 
 # SAVE --------
 
