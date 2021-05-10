@@ -1,6 +1,7 @@
+library(tidyverse)
 path_se_table2 <- "C:/Cloud/OneDrive - Emory University/data/NFHS/NFHS5 Papers/worsening despite wash/tables/sampling uncertainty table 2"
 
-table2 = read.table(col.names = c("var_desc","nfhs3","nfhs4","nfhs5"),text='Women who are literate (%)	59.6 (58.22-60.94)	68.4 (70.08-70.87)  	75.0
+table2 = read.table(col.names = c("var_desc","nfhs3","nfhs4","nfhs5"),text='Women who are literate (%)	59.6 (58.22-60.94)	70.5 (70.08-70.87)  	75.0
 Women with 10 or more years of schooling	23.8 (22.65-25.00)	 36.3 (35.83-36.80)	41.4
 Women age 20-24 years unmarried before age 18 years (%)**	56.0 (54.24-57.70)	70.8 (70.14-71.54)	72.1
 Sex ratio at birth for children born in the last five years (females per 1,000 males)	912.0 (882.16 – 942.65)	921.5 (905.28-937.91)	937.1
