@@ -1,4 +1,4 @@
-# Changes in child undernutrition and overweight in India from 2006 to 2019: an analysis of 22 states 
+# Changes in child undernutrition and overweight in India from 2006 to 2021: an analysis of 36 states 
 
 **Author Names:** Jithin Sam Varghese (1), Aashish Gupta (2), Rukshan Mehta (3), Aryeh D. Stein (4), Shivani A. Patel (4)
 

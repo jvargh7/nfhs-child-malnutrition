@@ -1,7 +1,6 @@
 ids = c("S81","S84",
         "S92",
         "S82",
-        "S83", 
         "S85",
         
         
@@ -9,204 +8,90 @@ ids = c("S81","S84",
         "S04","S09","S08",
         "S07","S10","S12")
 
-version = "2021-01-13"
 
 # changed_ids = c("S92",
 #                 "S09","S08",
 #                 "S14","S11")
 
 # Use state (wide format) -----------
-state_df <- read_dta(paste0(papers_path,"/worsening despite wash/state all indicators wide_",version,".dta")) %>% 
-  pivot_longer(cols=-one_of("nfhs5_state","variable","round","region"),names_to ="ID",values_to="value") %>% 
-  dplyr::select(-region,-round) %>% 
-  pivot_wider(names_from = "variable",values_from="value") %>% 
-  left_join(readxl::read_excel(paste0(extracts_path,"/mapping.xlsx"),sheet="nfhs5_state") %>% 
-              dplyr::select(ID,nfhs5s_description) %>% 
-              distinct(ID,.keep_all=TRUE) %>% 
-              dplyr::select(ID,nfhs5s_description),
-            by = c("ID")) %>%
-  dplyr::select(ID,nfhs5s_description,
-                nfhs4s_total,
-                nfhs5_state,nfhs5s_total) %>% 
-  dplyr::filter(ID %in% c(ids,"S07","S08","S09"))
+state_df <- indicators %>% 
+  dplyr::filter(level %in% c("State"),variable %in% ids) %>% 
+  bind_rows(
+    {.} %>% 
+      dplyr::filter(survey == "NFHS3",statecode == "AP") %>% 
+      mutate(statecode = "TG")) %>% 
+  dplyr::select(level,variable,statecode,survey,est) %>% 
+  pivot_wider(names_from=c("survey"),values_from=c("est")) %>% 
+  mutate(change_N3to4 = (NFHS4 - NFHS3)/diff3to4,
+         change_N4to5 = (NFHS5 - NFHS4)/diff4to5) %>% 
+  # dplyr::filter(!is.na(change_N3to4)) %>% 
+  arrange(level)
 
-urban_df <- read_dta(paste0(papers_path,"/worsening despite wash/state urban indicators wide_",version,".dta")) %>% 
-  pivot_longer(cols=-one_of("nfhs5_state","variable","round","region"),names_to ="ID",values_to="value") %>% 
-  dplyr::select(-region,-round) %>% 
-  dplyr::filter(!nfhs5_state %in% c("Andaman & Nicobar Islands","Dadra & Nagar Haveli and Daman & Diu",
-                                    "Lakshadweep","Ladakh","Jammu & Kashmir")) %>% 
-  pivot_wider(names_from = "variable",values_from="value") %>% 
-  left_join(readxl::read_excel(paste0(extracts_path,"/mapping.xlsx"),sheet="nfhs5_state") %>% 
-              dplyr::select(ID,nfhs5s_description) %>% 
-              distinct(ID,.keep_all=TRUE) %>% 
-              dplyr::select(ID,nfhs5s_description),
-            by = c("ID")) %>%
-  dplyr::select(ID,nfhs5s_description,
-                nfhs4s_urban,
-                nfhs5_state,nfhs5s_urban) %>% 
-  dplyr::filter(ID %in% ids)
+urban_df <- indicators %>% 
+  dplyr::filter(level %in% c("State_Urban"),variable %in% ids) %>% 
+  bind_rows(
+    {.} %>% 
+      dplyr::filter(survey == "NFHS3",statecode == "AP") %>% 
+      mutate(statecode = "TG")) %>% 
+  dplyr::select(level,variable,statecode,survey,est) %>% 
+  pivot_wider(names_from=c("survey"),values_from=c("est")) %>% 
+  mutate(change_N3to4 = (NFHS4 - NFHS3)/diff3to4,
+         change_N4to5 = (NFHS5 - NFHS4)/diff4to5) %>% 
+  # dplyr::filter(!is.na(change_N3to4)) %>% 
+  arrange(level)
 
-rural_df <- read_dta(paste0(papers_path,"/worsening despite wash/state rural indicators wide_",version,".dta")) %>% 
-  pivot_longer(cols=-one_of("nfhs5_state","variable","round","region"),names_to ="ID",values_to="value") %>% 
-  dplyr::select(-region,-round) %>% 
-  dplyr::filter(!nfhs5_state %in% c("Andaman & Nicobar Islands","Dadra & Nagar Haveli and Daman & Diu",
-                                    "Lakshadweep","Ladakh","Jammu & Kashmir")) %>% 
-  
-  pivot_wider(names_from = "variable",values_from="value") %>% 
-  left_join(readxl::read_excel(paste0(extracts_path,"/mapping.xlsx"),sheet="nfhs5_state") %>% 
-              dplyr::select(ID,nfhs5s_description) %>% 
-              distinct(ID,.keep_all=TRUE) %>% 
-              dplyr::select(ID,nfhs5s_description),
-            by = c("ID")) %>%
-  dplyr::select(ID,nfhs5s_description,
-                nfhs4s_rural,
-                nfhs5_state,nfhs5s_rural) %>% 
-  dplyr::filter(ID %in% ids)
+rural_df <- indicators %>% 
+  dplyr::filter(level %in% c("State_Rural"),variable %in% ids) %>% 
+  bind_rows(
+    {.} %>% 
+      dplyr::filter(survey == "NFHS3",statecode == "AP") %>% 
+      mutate(statecode = "TG")) %>% 
+  dplyr::select(level,variable,statecode,survey,est) %>% 
+  pivot_wider(names_from=c("survey"),values_from=c("est")) %>% 
+  mutate(change_N3to4 = (NFHS4 - NFHS3)/diff3to4,
+         change_N4to5 = (NFHS5 - NFHS4)/diff4to5) %>% 
+  # dplyr::filter(!is.na(change_N3to4)) %>% 
+  arrange(level)
 
-district_df <- read_dta(paste0(papers_path,"/worsening despite wash/district all indicators wide_",version,".dta")) %>% 
-  mutate(variable = case_when(round == "NFHS-4" ~ "nfhs4d_total",
-                              TRUE ~ "nfhs5d_total")) %>% 
-  pivot_longer(cols=-one_of("nfhs5_state","nfhs4_district","variable","round","sdistri_nfhs5to4"),names_to ="ID",values_to="value") %>% 
+district_df <- indicators %>% 
+  dplyr::filter(level == "District",survey %in% c("NFHS4","NFHS5")) %>% 
+  dplyr::select(level,district_df,variable,survey,est) %>% 
+  pivot_wider(names_from = survey,values_from=est)
 
-  dplyr::select(-round) %>% 
-  pivot_wider(names_from = "variable",values_from="value") %>% 
-  left_join(readxl::read_excel(paste0(extracts_path,"/mapping.xlsx"),sheet="nfhs5_district") %>% 
-              dplyr::select(ID,nfhs5d_description) %>% 
-              distinct(ID,.keep_all=TRUE) %>% 
-              dplyr::select(ID,nfhs5d_description),
-            by = c("ID")) %>% 
-  dplyr::filter(ID %in% c(ids,"S07","S08","S09"))
-
-
-# state_pc <- read_dta(paste0(papers_path,"/worsening despite wash/state development score.dta"))
-# district_pc <- read_dta(paste0(papers_path,"/worsening despite wash/district development score.dta"))
 
 # States -----------
-state_df %>% 
-  mutate(increase5 = case_when(ID == "S47" & (nfhs5s_total  > nfhs4s_total + 250) ~ 1,
-                               nfhs5s_total  > nfhs4s_total + 5 ~ 1,
-                               is.na(nfhs5s_total)|is.na(nfhs4s_total) ~ NA_real_,
+bind_rows(state_df,
+          rural_df,
+          urban_df,
+          district_df) %>% 
+  mutate(# increase5 is used in Discussion
+         increase5 = case_when(
+                               NFHS5  > NFHS4 + 5 ~ 1,
+                               is.na(NFHS5)|is.na(NFHS4) ~ NA_real_,
+                               TRUE ~ 0),
+        increase = case_when(NFHS5 > NFHS4 ~ 1,
+                         is.na(NFHS5)|is.na(NFHS4) ~ NA_real_,
+                         TRUE ~ 0),
+         count_nfhs5 = case_when(is.na(NFHS5) ~ 0,
+                                 TRUE ~ 1),
+         count_nfhs4 = case_when(is.na(NFHS4) ~ 0,
+                                 TRUE ~ 1),
+         # decrease5 = case_when(
+         #                       NFHS5 + 5 < NFHS4 ~ 1,
+         #                       is.na(NFHS5)|is.na(NFHS4) ~ NA_real_,
+         #                       TRUE ~ 0),
+         decrease7 = case_when(
+                               NFHS5 + 7 < NFHS4 ~ 1,
+                               is.na(NFHS5)|is.na(NFHS4) ~ NA_real_,
                                TRUE ~ 0),
          
-         count_nfhs5 = case_when(is.na(nfhs5s_total) ~ 0,
-                                 TRUE ~ 1),
-         count_nfhs4 = case_when(is.na(nfhs4s_total) ~ 0,
-                                 TRUE ~ 1),
-         decrease5 = case_when(ID == "S47" & (nfhs5s_total + 250 < nfhs4s_total) ~ 1,
-                               nfhs5s_total + 5 < nfhs4s_total ~ 1,
-                               is.na(nfhs5s_total)|is.na(nfhs4s_total) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease7 = case_when(ID == "S47" & (nfhs5s_total + 250 < nfhs4s_total) ~ 1,
-                               nfhs5s_total + 7 < nfhs4s_total ~ 1,
-                               is.na(nfhs5s_total)|is.na(nfhs4s_total) ~ NA_real_,
-                               TRUE ~ 0),
-         increase = case_when(nfhs5s_total > nfhs4s_total ~ 1,
-                              is.na(nfhs5s_total)|is.na(nfhs4s_total) ~ NA_real_,
-                              TRUE ~ 0),
-         decrease = case_when(nfhs5s_total < nfhs4s_total ~ 1,
-                              is.na(nfhs5s_total)|is.na(nfhs4s_total) ~ NA_real_,
+         decrease = case_when(NFHS5 < NFHS4 ~ 1,
+                              is.na(NFHS5)|is.na(NFHS4) ~ NA_real_,
                               TRUE ~ 0)) %>% 
-  group_by(ID,nfhs5s_description) %>% 
-  summarize_at(vars(increase5,increase,decrease5,decrease7, decrease,count_nfhs5,count_nfhs4),funs(total = sum(.,na.rm=TRUE),non_na = sum(!is.na(.)))) %>% 
-  dplyr::select(ID,nfhs5s_description,increase5_total,decrease5_total,decrease7_total,increase_total,decrease_total,count_nfhs5_total,count_nfhs4_total) %>%
-  write.csv(.,paste0(papers_path,"/worsening despite wash/tables/st2_states.csv"),row.names = FALSE)
+  group_by(level,variable) %>% 
+  summarize_at(vars(increase,increase5,decrease7, decrease,count_nfhs5,count_nfhs4),funs(total = sum(.,na.rm=TRUE),non_na = sum(!is.na(.)))) %>% 
+  dplyr::select(level,variable,decrease7_total,increase_total,increase5_total,decrease_total,count_nfhs5_total,count_nfhs4_total) %>%
+  write_csv(.,"paper/change_states.csv")
 
-
-
-# Districts --------
-
-district_df %>% 
-  mutate(increase5 = case_when(ID == "S47" & (nfhs5d_total  > nfhs4d_total + 250) ~ 1,
-                               nfhs5d_total  > nfhs4d_total + 5 ~ 1,
-                               is.na(nfhs5d_total)|is.na(nfhs4d_total) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease5 = case_when(ID == "S47" & (nfhs5d_total + 250 < nfhs4d_total) ~ 1,
-                               nfhs5d_total + 5 < nfhs4d_total ~ 1,
-                               is.na(nfhs5d_total)|is.na(nfhs4d_total) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease7 = case_when(ID == "S47" & (nfhs5d_total + 250 < nfhs4d_total) ~ 1,
-                               nfhs5d_total + 7 < nfhs4d_total ~ 1,
-                               is.na(nfhs5d_total)|is.na(nfhs4d_total) ~ NA_real_,
-                               TRUE ~ 0),
-         count_nfhs5 = case_when(is.na(nfhs5d_total) ~ 0,
-                                 TRUE ~ 1),
-         count_nfhs4 = case_when(is.na(nfhs4d_total) ~ 0,
-                                 TRUE ~ 1),
-         increase = case_when(nfhs5d_total > nfhs4d_total ~ 1,
-                              is.na(nfhs5d_total)|is.na(nfhs4d_total) ~ NA_real_,
-                              TRUE ~ 0),
-         decrease = case_when(nfhs5d_total < nfhs4d_total ~ 1,
-                              is.na(nfhs5d_total)|is.na(nfhs4d_total) ~ NA_real_,
-                              TRUE ~ 0))  %>% 
-  group_by(ID,nfhs5d_description) %>% 
-  summarize_at(vars(increase5,increase,decrease5,decrease7,decrease,count_nfhs5,count_nfhs4),funs(total = sum(.,na.rm=TRUE),non_na = sum(!is.na(.)))) %>% 
-  dplyr::select(ID,nfhs5d_description,increase5_total,decrease5_total,decrease7_total,increase_total,decrease_total,count_nfhs5_total,count_nfhs4_total) %>% 
-  write.csv(.,paste0(papers_path,"/worsening despite wash/tables/st2_districts.csv"),row.names = FALSE)
-
-
-
-# Urban ------------
-
-urban_df %>% 
-  dplyr::filter(!nfhs5_state %in% c("Dadra & Nagar Haveli and Daman & Diu","Ladakh","Jammu & Kashmir")) %>% 
-  mutate(increase5 = case_when(ID == "S47" & (nfhs5s_urban  > nfhs4s_urban + 250) ~ 1,
-                               nfhs5s_urban  > nfhs4s_urban + 5 ~ 1,
-                               is.na(nfhs5s_urban)|is.na(nfhs4s_urban) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease5 = case_when(ID == "S47" & (nfhs5s_urban + 250 < nfhs4s_urban) ~ 1,
-                               nfhs5s_urban + 5 < nfhs4s_urban ~ 1,
-                               is.na(nfhs5s_urban)|is.na(nfhs4s_urban) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease7 = case_when(ID == "S47" & (nfhs5s_urban + 250 < nfhs4s_urban) ~ 1,
-                               nfhs5s_urban + 7 < nfhs4s_urban ~ 1,
-                               is.na(nfhs5s_urban)|is.na(nfhs4s_urban) ~ NA_real_,
-                               TRUE ~ 0),
-         count_nfhs5 = case_when(is.na(nfhs5s_urban) ~ 0,
-                                 TRUE ~ 1),
-         count_nfhs4 = case_when(is.na(nfhs4s_urban) ~ 0,
-                                 TRUE ~ 1),
-         increase = case_when(nfhs5s_urban > nfhs4s_urban ~ 1,
-                              is.na(nfhs5s_urban)|is.na(nfhs4s_urban) ~ NA_real_,
-                              TRUE ~ 0),
-         decrease = case_when(nfhs5s_urban < nfhs4s_urban ~ 1,
-                              is.na(nfhs5s_urban)|is.na(nfhs4s_urban) ~ NA_real_,
-                              TRUE ~ 0)) %>% 
-  group_by(ID,nfhs5s_description) %>% 
-  summarize_at(vars(increase5,increase,decrease5,decrease7,decrease,count_nfhs5,count_nfhs4),funs(total = sum(.,na.rm=TRUE),non_na = sum(!is.na(.)))) %>% 
-  dplyr::select(ID,nfhs5s_description,increase5_total,decrease5_total,decrease7_total,increase_total,decrease_total,count_nfhs5_total,count_nfhs4_total) %>%
-  write.csv(.,paste0(papers_path,"/worsening despite wash/tables/st2_urban.csv"),row.names = FALSE) 
-
-
-
-# Rural -------
-
-rural_df %>% 
-  dplyr::filter(!nfhs5_state %in% c("Dadra & Nagar Haveli and Daman & Diu","Ladakh","Jammu & Kashmir")) %>% 
-  mutate(increase5 = case_when(ID == "S47" & (nfhs5s_rural  > nfhs4s_rural + 250) ~ 1,
-                               nfhs5s_rural  > nfhs4s_rural + 5 ~ 1,
-                               is.na(nfhs5s_rural)|is.na(nfhs4s_rural) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease5 = case_when(ID == "S47" & (nfhs5s_rural + 250 < nfhs4s_rural) ~ 1,
-                               nfhs5s_rural + 5 < nfhs4s_rural ~ 1,
-                               is.na(nfhs5s_rural)|is.na(nfhs4s_rural) ~ NA_real_,
-                               TRUE ~ 0),
-         decrease7 = case_when(ID == "S47" & (nfhs5s_rural + 250 < nfhs4s_rural) ~ 1,
-                               nfhs5s_rural + 7 < nfhs4s_rural ~ 1,
-                               is.na(nfhs5s_rural)|is.na(nfhs4s_rural) ~ NA_real_,
-                               TRUE ~ 0),
-         count_nfhs5 = case_when(is.na(nfhs5s_rural) ~ 0,
-                                 TRUE ~ 1),
-         count_nfhs4 = case_when(is.na(nfhs4s_rural) ~ 0,
-                                 TRUE ~ 1),
-         increase = case_when(nfhs5s_rural > nfhs4s_rural ~ 1,
-                              is.na(nfhs5s_rural)|is.na(nfhs4s_rural) ~ NA_real_,
-                              TRUE ~ 0),
-         decrease = case_when(nfhs5s_rural < nfhs4s_rural ~ 1,
-                              is.na(nfhs5s_rural)|is.na(nfhs4s_rural) ~ NA_real_,
-                              TRUE ~ 0)) %>% 
-  group_by(ID,nfhs5s_description) %>% 
-  summarize_at(vars(increase5,increase,decrease5,decrease7,decrease,count_nfhs5,count_nfhs4),funs(total = sum(.,na.rm=TRUE),non_na = sum(!is.na(.)))) %>% 
-  dplyr::select(ID,nfhs5s_description,increase5_total,decrease5_total,decrease7_total,increase_total,decrease_total,count_nfhs5_total,count_nfhs4_total) %>%
-  write.csv(.,paste0(papers_path,"/worsening despite wash/tables/st2_rural.csv"),row.names = FALSE)
 
 
