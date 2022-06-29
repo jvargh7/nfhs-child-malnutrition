@@ -1,6 +1,9 @@
 library(oaxaca)
 source("analysis/indicators_consolidated.R")
 development_score <- read_csv("analysis/development score.csv")
+
+development_score %>% group_by(level,survey) %>% summarize(pc = median(pc1),q025 = quantile(pc1,0.025),q975 = quantile (pc1,0.975))
+
 outcomes <- indicators %>% 
   dplyr::filter(level %in% c("District","State"),survey %in% c("NFHS4","NFHS5"),variable %in% c("S81","S82","S84","S85","S92")) %>% 
   dplyr::select(level,survey,statecode,district_df,variable,est) %>% 
