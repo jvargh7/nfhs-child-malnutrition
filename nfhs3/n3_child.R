@@ -47,5 +47,6 @@ n3_child <- read_dta(paste0(path_dhs_folder,"/IA/IAPR52DT/IAPR52FL.dta"),col_sel
 
 saveRDS(n3_child,paste0(path_nfhs_malnutrition_paper,"/working/n3_child.RDS"))
 
-
+# n3_child <- readRDS(paste0(path_nfhs_malnutrition_paper,"/working/n3_child.RDS")) %>% 
+#   dplyr::filter(!is.na(S81)|!is.na(S82)|!is.na(S84))
 

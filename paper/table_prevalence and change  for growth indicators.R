@@ -1,5 +1,7 @@
-source("analysis/indicators_consolidated.R")
+require(tidyverse)
 
+source("analysis/indicators_consolidated.R")
+source("C:/code/external/functions/nhst/z_test.R")
 prevalence <- indicators %>% 
   dplyr::filter(level %in% c("India","Rural","Urban"),variable %in% c("S81","S82","S84","S85")) %>% 
   dplyr::select(level,variable,survey,est_ci) %>% 
@@ -19,8 +21,10 @@ annualized_change <- indicators %>%
                             round(change_N3to4 + 1.96*std_err_N3to4,1),")"),
          change_ci_N4to5 = paste0(round(change_N4to5,1)," (",
                                   round(change_N4to5 - 1.96*std_err_N4to5,1),", ",
-                                  round(change_N4to5 + 1.96*std_err_N4to5,1),")")) %>% 
-  dplyr::select(level,variable,change_ci_N3to4,change_ci_N4to5) %>% 
+                                  round(change_N4to5 + 1.96*std_err_N4to5,1),")"),
+         test_change = z_test(change_N3to4,change_N4to5,std_err_N3to4,std_err_N4to5,output = "z_p")
+         ) %>% 
+  dplyr::select(level,variable,change_ci_N3to4,change_ci_N4to5,test_change) %>% 
   arrange(level)
 
 tests_differences <- indicators %>% 

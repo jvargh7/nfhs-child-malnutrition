@@ -18,9 +18,9 @@ n3_individual <- read_dta(paste0(path_dhs_folder,"/IA/IAIR52DT/IAIR52FL.dta"),co
     S20 = case_when(
       m_cohabitation == 99 ~ NA_real_,
       m_age < 20 | m_age > 24 ~ NA_real_,
-      m_age %in% c(20:24) & is.na(m_cohabitation) ~ 0,
-      m_age %in% c(20:24) & m_cohabitation %in% c(0:18) ~ 0,
-      m_age %in% c(20:24) & m_cohabitation %in% c(19:24) ~ 1,
+      m_age %in% c(20:24) & m_cohabitation %in% c(0:17) ~ 0,
+      m_age %in% c(20:24) & is.na(m_cohabitation) ~ 1,
+      m_age %in% c(20:24) & m_cohabitation %in% c(18:49) ~ 1,
       TRUE ~ NA_real_
     )
     
