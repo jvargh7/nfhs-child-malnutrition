@@ -11,4 +11,5 @@ indicators <- purrr::map_dfr(c("birth","child","individual","household","populat
   mutate(est_ci = paste0(round(est,1)," (",
                          round(lci,1),", ",
                          round(uci,1),")"))
-                        
+
+write_csv(indicators,paste0(path_nfhs_malnutrition_paper,"/writing/Supplementary File 2.csv"))                        

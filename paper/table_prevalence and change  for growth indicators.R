@@ -41,7 +41,8 @@ tests_differences <- indicators %>%
   mutate(change_N3to4 = (NFHS4-NFHS3)/diff3to4,
          change_N4to5 = (NFHS5-NFHS4)/diff4to5) %>% 
   group_by(level,variable) %>% 
-  summarize(test_output = wilcox.test(change_N3to4,change_N4to5,paired=TRUE)$statistic[[1]],
+  summarize(diff_change = mean(change_N4to5 - change_N3to4),
+            test_output = wilcox.test(change_N3to4,change_N4to5,paired=TRUE)$statistic[[1]],
             test_pvalue = wilcox.test(change_N3to4,change_N4to5,paired=TRUE)$p.value[[1]],
             n = n())
 
