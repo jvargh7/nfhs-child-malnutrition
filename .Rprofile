@@ -15,7 +15,8 @@ sdist <- readr::read_csv("C:/code/external/nfhs5_on_map2016/data/psu_on_map2016.
 options(survey.adjust.domain.lonely=TRUE)
 options(survey.lonely.psu="adjust")
 
-source(list.files("C:/code/external/functions/survey",full.names = TRUE))
+purrr::map(list.files("C:/code/external/functions/survey",full.names = TRUE),
+    function(f) source(f))
 
 diff3to4 = 10
 diff4to5 = 5

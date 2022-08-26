@@ -39,8 +39,8 @@ for(id in nnm_ids[1:4]){
     scale_x_continuous(limits=c(-2,2)) +
     scale_y_continuous(limits=c(-2.5,2.5)) +
     theme_bw() +
-    xlab("Change 2006-15 (% p.a.)") +
-    ylab("Change 2015-19 (% p.a.)") 
+    xlab("Change 2006-16 (% p.a.)") +
+    ylab("Change 2016-21 (% p.a.)") 
   
   
 }
@@ -65,8 +65,8 @@ for(id in nnm_ids[5:13]){
     scale_x_continuous(limits=c(0,10)) +
     scale_y_continuous(limits=c(-10,10)) +
     theme_bw() +
-    xlab("Change 2006-15 (% p.a.)") +
-    ylab("Change 2015-19 (% p.a.)") 
+    xlab("Change 2006-16 (% p.a.)") +
+    ylab("Change 2016-21 (% p.a.)") 
   
   
 }

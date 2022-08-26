@@ -27,7 +27,7 @@ tmap_plot <- function(id,tmap_title = "A"){
                               NFHS5 + 7 < NFHS4 ~ 2,
                               !is.na(NFHS5) | !is.na(NFHS4) ~ 1,
                               TRUE ~ NA_real_)) %>% 
-    mutate(status = factor(status,levels=c(0:2),labels=c("Increased","Decreased 0-7 pp","Decreased > 7pp")))
+    mutate(status = factor(status,levels=c(0:2),labels=c("Increased","Decreased 0-7 PP","Decreased > 7 PP")))
   
     
   
