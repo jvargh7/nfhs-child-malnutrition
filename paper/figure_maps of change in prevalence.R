@@ -12,8 +12,8 @@ bound_df <- readOGR(paste0(path_shape_files,"/maps-master/States"),"Admin2")
 
 source("analysis/indicators_consolidated.R")
 
-
-tmap_plot <- function(id,tmap_title = "A"){
+tmap_options(check.and.fix = TRUE)
+tmap_plot <- function(id,tmap_title = "A",type = "png"){
 
   title = tmap_title
 
@@ -27,7 +27,7 @@ tmap_plot <- function(id,tmap_title = "A"){
                               NFHS5 + 7 < NFHS4 ~ 2,
                               !is.na(NFHS5) | !is.na(NFHS4) ~ 1,
                               TRUE ~ NA_real_)) %>% 
-    mutate(status = factor(status,levels=c(0:2),labels=c("Increased","Decreased 0-7 pp","Decreased > 7pp")))
+    mutate(status = factor(status,levels=c(0:2),labels=c("Increased","Decreased 0-7 PP","Decreased > 7 PP")))
   
     
   
@@ -54,9 +54,16 @@ tmap_plot <- function(id,tmap_title = "A"){
   a <- a + tm_layout(toupper(str_replace(title,"_","-")),title.size = 2,
                      legend.text.size = 1.5,
                      legend.title.size = 1.5)
-  png_name <- paste0(tmap_title,
-                     "7pp.png")
-  tmap_save(a,paste0(path_nfhs_malnutrition_paper,"/figures/",png_name),height=2300/300)
+  
+  if(type == "png"){
+    fig_name <- paste0(tmap_title,
+                       "7pp.png")
+  }
+  if(type == "jpg"){
+    fig_name <- paste0(tmap_title,
+                       "7pp.jpg")
+  }
+  tmap_save(a,paste0(path_nfhs_malnutrition_paper,"/figures/",fig_name),height=2300/300)
 
 
 }
@@ -64,9 +71,13 @@ tmap_plot <- function(id,tmap_title = "A"){
 tmap_plot(id="S81",tmap_title = "A")
 tmap_plot(id="S82",tmap_title = "B")
 tmap_plot(id="S84",tmap_title = "C")
-tmap_plot(id="S92",tmap_title = "E")
+# tmap_plot(id="S92",tmap_title = "E")
 tmap_plot(id="S85",tmap_title = "D")
 
 
-
+tmap_plot(id="S81",tmap_title = "A",type = "jpg")
+tmap_plot(id="S82",tmap_title = "B",type = "jpg")
+tmap_plot(id="S84",tmap_title = "C",type = "jpg")
+# tmap_plot(id="S92",tmap_title = "E")
+tmap_plot(id="S85",tmap_title = "D",type = "jpg")
 
